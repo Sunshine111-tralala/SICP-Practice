@@ -1,0 +1,925 @@
+#lang sicp
+;;; Practice 1.8
+; (define (cubic-root x)
+;     (define (cubic-iter x guess)
+;         (if (good-enough? x guess)
+;             guess
+;             (cubic-iter x (improved guess))))
+;     (define (good-enough? x guess)
+;         (< (abs (- (* (* guess guess) guess) x)) 0.0000001))
+;     (define (abs x)
+;         (if (< x 0)
+;             (- x)
+;             x))
+;     (define (improved guess)
+;         (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+
+;     (cubic-iter x 1)    
+; )
+
+; (cubic-root 8)
+
+;;; example: change money
+; (define (count-change amount)
+;     (cc amount 5))
+; (define (cc amount kinds-of-coins)
+;     (cond [(= amount 0) 1]
+;           [(or (< amount 0) (= kinds-of-coins 0)) 0]
+;           [else (+ (cc amount
+;                        (- kinds-of-coins 1))
+;                    (cc (- amount
+;                             (first-denomination kinds-of-coins))
+;                        kinds-of-coins))]))
+
+; (define (first-denomination kinds-of-coins)
+;     (cond [(= kinds-of-coins 1) 1]
+;           [(= kinds-of-coins 2) 5]
+;           [(= kinds-of-coins 3) 10]
+;           [(= kinds-of-coins 4) 25]
+;           [(= kinds-of-coins 5) 50]))
+
+; (count-change 100)
+
+
+;;; Practice 1.11
+;;; 递归
+; (define (f1 n)
+;     (cond [(< n 3) n]
+;           [else (+ (f1 (- n 1))
+;                    (f1 (- n 2))
+;                    (f1 (- n 3)))]))
+
+; ;;; 迭代
+; (define (f2 n)
+;     (f-iter 0 1 2 n))
+; (define (f-iter a b c count)
+;     (cond [(< count 3) c]
+;           [else (f-iter b c (+ a b c) (- count 1))]))
+
+
+; ;; test
+; (f1 3)
+; (f2 3)
+; (f1 4)
+; (f2 4)
+
+
+;;; Practice 1.12
+; (define (pascal row col)
+;     (cond [(< row col) 'failed]
+;           [(= row col) 1]
+;           [(= col 1) 1]
+;           [else (+ (pascal (- row 1)
+;                            (- col 1))
+;                    (pascal (- row 1)
+;                            col))]))
+
+; ;; test
+; (pascal 1 1)
+; (pascal 1 2)
+; (pascal 2 1)
+; (pascal 2 2)
+; (pascal 3 2)
+; (pascal 4 2)
+; (pascal 4 3)
+; (pascal 5 2)
+; (pascal 5 3)
+; (pascal 5 4)
+
+
+;;; Practice 1.16
+; (define (expt b n)
+;     (expt-iter b n 1))
+
+; (define (expt-iter b n remain)
+;     (cond [(= n 0) remain]
+;           [(even? n) (expt-iter (* b b) 
+;                                 (/ n 2)
+;                                 remain)]
+;           [else (expt-iter b
+;                            (- n 1)
+;                            (* remain b))]
+;           ))
+
+; ;; test
+; (expt 2 3)
+; (expt 2 4)
+; (expt 2 5)
+; (expt 2 10)
+
+
+;;; Practice 1.17
+; (define (double a) (* 2 a))
+; (define (halve a) (/ a 2))
+; (define (times a b)
+;     (cond [(= b 0) 0]
+;           [(odd? b) (+ a (times a (- b 1)))]
+;           [(even? b) (times (double a) (halve b))]))
+
+
+; ;;; Practice 1.18
+; (define (times2 a b)
+;     (times-iter a b 0))
+
+; (define (times-iter a b mul)
+;     (cond [(= b 0) mul]
+;           [(even? b) 
+;            (times-iter (double a)
+;                        (halve b)
+;                        mul)]
+;           [(odd? b)
+;            (times-iter a
+;                        (- b 1)
+;                        (+ a mul))]))
+
+; (times2 2 3)
+; (times 2 3)
+; (times2 96 87)
+; (times 96 87)
+
+
+;;; Practice 1.19
+; (define (fib n)
+;     (fib-iter 1 0 0 1 n))
+; (define (fib-iter a b p q count)
+;     (cond [(= count 0) b]
+;           [(even? count)
+;            (fib-iter a
+;                      b
+;                      (+ (* p p)
+;                         (* q q))
+;                      (+ (* q q)
+;                         (* 2 (* p q)))
+;                      (/ count 2))]
+;           [else (fib-iter (+ (* b q) (* a q) (* a p))
+;                           (+ (* b p) (* a q))
+;                           p
+;                           q
+;                           (- count 1))]))
+
+; ;; test
+; (fib 1)
+; (fib 2)
+; (fib 3)
+; (fib 4)
+; (fib 5)
+; (fib 6)
+; (fib 7)
+
+
+;;; example 欧里几得
+; (define (gcd a b)
+;     (cond [(= b 0) a]
+;           [(gcd b (remainder a b))]))
+
+; (gcd 206 40)
+
+;;; example 素数检测
+;;; start at 23:32 12.22
+; (define (smallest-divisor n)
+;     (find-divisor n 2))
+
+; (define (find-divisor n test-divisor)
+;     (cond [(> (square test-divisor) n) n]
+;           [(divides? test-divisor n) test-divisor]
+;           [else (find-divisor n (+ test-divisor 1))]))
+
+; (define (divides? a b)
+;     (= (remainder b a) 0))
+
+; (define (square x)  
+;     (* x x))
+
+; (define (prime? n)
+;     (= n (smallest-divisor n)))
+
+;;; 费马小定理
+; (define (square x) (* x x))
+
+; (define (expmod base exp m)
+;     (cond [(= exp 0) 1]
+;           [(even? exp)
+;            (remainder (square (expmod base (/ exp 2) m)) 
+;                       m)]
+;           [else 
+;             (remainder (* base (expmod base (- exp 1) m)) 
+;                        m)]))
+
+; (define (fermat-test n)
+;     (define (try-it a)
+;         (= (expmod a n n) a))
+;     (try-it (+ 1 (random (- n 1)))))
+
+; (define (fast-prime? n times)
+;     (cond [(= times 0) true]
+;           [(fermat-test n) (fast-prime? n (- times 1))]
+;           [else false]))
+
+; (fast-prime? 24 30)
+
+
+;;; Practice 1.21
+;;; Practice 1.22
+; (define (smallest-divisor n)
+;     (find-divisor n 2))
+
+; (define (find-divisor n test-divisor)
+;     (cond [(> (square test-divisor) n) n]
+;           [(divides? test-divisor n) test-divisor]
+;           [else (find-divisor n (+ test-divisor 1))]))
+
+; (define (divides? a b)
+;     (= (remainder b a) 0))
+
+; (define (square x)  
+;     (* x x))
+
+; (define (prime? n)
+;     (= n (smallest-divisor n)))
+
+; (define (timed-prime-test n)
+;     (newline)
+;     (display n)
+;     (start-prime-test n (runtime)))
+
+; (define (start-prime-test n start-time)
+;     (if (prime? n)
+;         (report-prime (- (runtime) start-time))))
+
+; (define (report-prime elapsed-time)
+;     (display " *** ")
+;     (display elapsed-time)
+;     (display "\n"))
+
+; (define (next-odd start)
+;         (cond [(odd? start) (+ 2 start)]
+;               [(even? start) (+ 1 start)]))
+
+; (define (search-for-primes start count)
+;     (cond [(= count 0) 
+;            (newline)
+;            (display " already displayed all number.")
+;            (newline)
+;            (timed-prime-test (- start 2))]
+;           [(prime? start)  ;(timed-prime-test start)
+;                            ;(display start)
+;                            ;(newline)
+;                            (search-for-primes (next-odd start) (- count 1))]
+;           [else (search-for-primes (next-odd start) count)])
+;           )
+
+; (search-for-primes 1000 3)
+; (search-for-primes 10000 3)
+; (search-for-primes 100000 3)
+; (search-for-primes 1000000 3)
+; (search-for-primes 10000000 3)
+; (search-for-primes 100000000 3)
+; (search-for-primes 1000000000 3)
+; (search-for-primes 10000000000 3)
+; (search-for-primes 100000000000 3)
+; (search-for-primes 1000000000000 3)
+
+
+;;; Practice 1.23
+
+; (define (smallest-divisor n)
+;     (find-divisor n 2))
+
+; (define (find-divisor n test-divisor)
+;     (cond [(> (square test-divisor) n) n]
+;           [(divides? test-divisor n) test-divisor]
+;           [else (find-divisor n (next test-divisor))]))
+
+; (define (next test-divisor)
+;     (cond [(= test-divisor 2) 3]
+;           [else (+ 2 test-divisor)]))
+
+; (define (divides? a b)
+;     (= (remainder b a) 0))
+
+; (define (square x)  
+;     (* x x))
+
+; (smallest-divisor 23)
+; (smallest-divisor 27)
+; (smallest-divisor 29)
+
+
+; ;;; Practice 1.24
+; (define (square x) (* x x))
+
+; (define (expmod base exp m)
+;     (cond [(= exp 0) 1]
+;           [(even? exp)
+;            (remainder (square (expmod base (/ exp 2) m)) 
+;                       m)]
+;           [else 
+;             (remainder (* base (expmod base (- exp 1) m)) 
+;                        m)]))
+
+; (define (fermat-test n)
+;     (define (try-it a)
+;         (= (expmod a n n) a))
+;     (try-it (+ 1 (random (- n 1)))))
+
+; (define (fast-prime? n times)
+;     (cond [(= times 0) true]
+;           [(fermat-test n) (fast-prime? n (- times 1))]
+;           [else false]))
+
+; (define (timed-prime-test n)
+;     (newline)
+;     (display n)
+;     (start-prime-test n (runtime)))
+
+; (define (start-prime-test n start-time)
+;     (if (fast-prime? n n)
+;         (report-prime (- (runtime) start-time))))
+
+; (define (report-prime elapsed-time)
+;     (display " *** ")
+;     (display elapsed-time)
+;     (display "\n"))
+
+; (define (next-odd start)
+;         (cond [(odd? start) (+ 2 start)]
+;               [(even? start) (+ 1 start)]))
+
+; (define (search-for-primes start count)
+;     (cond [(= count 0) 
+;            (newline)
+;            (display " already displayed all number.")
+;            (newline)
+;            (timed-prime-test (- start 2))]
+;           [(fast-prime? start start)  ;(timed-prime-test start)
+;                            ;(display start)
+;                            ;(newline)
+;                            (search-for-primes (next-odd start) (- count 1))]
+;           [else (search-for-primes (next-odd start) count)])
+;           )
+
+; (search-for-primes 1000 3)
+; (search-for-primes 10000 3)
+; (search-for-primes 100000 3)
+; (search-for-primes 1000000 3)
+; (search-for-primes 10000000 3)
+; (search-for-primes 100000000 3)
+; (search-for-primes 1000000000 3)
+; (search-for-primes 10000000000 3)
+; (search-for-primes 100000000000 3)
+; (search-for-primes 1000000000000 3)
+
+
+; ;;; Practice 1.27
+; (define (square x) (* x x))
+
+; (define (expmod base exp m)
+;     (cond [(= exp 0) 1]
+;           [(even? exp)
+;            (remainder (square (expmod base (/ exp 2) m)) 
+;                       m)]
+;           [else 
+;             (remainder (* base (expmod base (- exp 1) m)) 
+;                        m)]))
+
+; (define (fermat-test n)
+;     (define (try-it a)
+;         (cond [(= a 0) (display "end")
+;                        (newline)]
+;               [(= (expmod a n n) a) (try-it (- a 1))]
+;               [else (display "error")
+;                     (newline)]))
+;     (try-it (- n 1)))
+
+; (define (fast-prime? n times)
+;     (cond [(= times 0) true]
+;           [(fermat-test n) (fast-prime? n (- times 1))]
+;           [else false]))
+
+
+; (fermat-test 15)
+; (fermat-test 14)
+; (fermat-test 12)
+; (fermat-test 6601)
+; (fermat-test 2821)
+; (fermat-test 2465)
+; (fermat-test 1729)
+; (fermat-test 1105)
+; (fermat-test 561)
+
+
+;;; Practice 1.28
+; (define (square x) (* x x))
+
+; (define (expmod base exp m)
+;     (cond [(= exp 0) 1]
+;           [(even? exp)
+;            (remainder (square (expmod base (/ exp 2) m)) 
+;                       m)]
+;           [else 
+;             (remainder (* base (expmod base (- exp 1) m)) 
+;                        m)]))
+
+; (define (fermat-test-rabin n)
+;     (define (try-it a)
+;         (= (expmod a 
+;                    n 
+;                    (- n 1)) 
+;            a))
+;     (cond [(even? n) 
+;            (= (expmod (square 
+;                         (+ 2 (random (- n 4)))) 
+;                       n 
+;                       n) 
+;            1)]
+;           [else 
+;            (try-it (+ 1 (random (- n 1))))]))
+
+
+
+; (define (fast-prime-rabin? n times)
+;     (cond [(= times 0) true]
+;           [(fermat-test-rabin n) (fast-prime-rabin? n (- times 1))]
+;           [else false]))
+; (fermat-test-rabin 15)
+; (fermat-test-rabin 14)
+; (fermat-test-rabin 12)
+; (fermat-test-rabin 6601)
+; (fermat-test-rabin 2821)
+; (fermat-test-rabin 2465)
+; (fermat-test-rabin 1729)
+; (fermat-test-rabin 1105)
+; (fermat-test-rabin 561)
+
+; ;;; Practice 1.28 (参考答案)
+; (define (square x)
+;     (* x x))
+
+; (define (expmod base exp m)
+;     (cond ((= exp 0)
+;             1)
+;           ((nontrivial-square-root? base m)                 ; 新增
+;             0)                                              ;
+;           ((even? exp)
+;             (remainder (square (expmod base (/ exp 2) m))
+;                        m))
+;           (else
+;             (remainder (* base (expmod base (- exp 1) m))
+;                        m))))
+
+; (define (nontrivial-square-root? a n)
+;     (and (not (= a 1))
+;          (not (= a (- n 1)))
+;          (= 1 (remainder (square a) n))))
+
+; (define (non-zero-random n)
+;     (let ((r (random n)))
+;         (if (not (= r 0))
+;             r
+;             (non-zero-random n))))
+
+; (define (Miller-Rabin-test n)
+;     (let ((times (ceiling (/ n 2))))
+;         (test-iter n times)))
+
+; (define (test-iter n times)
+    ; (cond ((= times 0)
+    ;         #t)
+    ;       ((= (expmod (non-zero-random n) (- n 1) n)
+    ;           1)
+    ;         (test-iter n (- times 1)))
+    ;       (else
+    ;         #f)))
+
+
+;;; 1.3 高阶抽象
+;;; common pattern
+; (define (sum term a next b)
+;     (cond[(> a b) 0] 
+;          [else
+;           (+ (term a)
+;              (sum term (next a) next b))]))
+
+
+; ;;; Practice 1.29
+; (define (integral-sim f a b n)
+;     (define h (/ (- b a) n))
+;     (define (sim-next x)
+;         (+ x (* 2 h)))
+;     (* (/ h 3)
+;        (+ (* 4 (sum f (+ a h) sim-next (- b h)))
+;           (* 2 (sum f (+ a (* 2 h)) sim-next (- b h)))
+;           (f a)
+;           (f b))))
+
+; (define (cube x)
+;     (* x x x))
+
+; (integral-sim cube 0 1 100)
+; (integral-sim cube 0 1 1000)
+
+;;; Practice 1.30
+; (define (sum term a next b)
+;     (define (iter a result)
+;         (if (> a b)
+;             result
+;             (iter (next a) 
+;                   (+ (term a)
+;                      result))))
+;     (iter a 0))
+
+; ;;; Practice 1.31
+; (define (product term a next b)
+;     (cond [(> a b) 1]
+;           [else (* (term a)
+;                    (product term 
+;                             (next a)
+;                             next
+;                             b))]))
+
+; (define (product-iter term a next b)
+;     (define (iter a result)
+;         (if (> a b)
+;             result
+;             (iter (next a)
+;                   (* result (term a)))))
+;     (iter a 1))
+
+; ; (define (factorial n)
+; ;     (define (identity x) x)
+; ;     (product identity 1 inc n))
+
+; ; (factorial 6)
+
+; (define (pi-product a b)
+;     (define (f x)
+;         (cond [(even? x) (/ (* 2 (+ 1 (/ x 2)))
+;                             (+ x 1))]
+;               [else (/ (+ 1 x)
+;                        (+ 2 x))]))
+;     (product-iter f a inc b))
+
+; (pi-product 1 100)
+
+;;; Practice 1.32
+; (define (accumulate combiner null-value term a next b)
+;     (cond [(> a b) null-value]
+;           [else (combiner (term a)
+;                           (accumulate combiner 
+;                                       null-value 
+;                                       term 
+;                                       (next a) 
+;                                       next 
+;                                       b))]))
+
+
+; ;;; Practice 1.33
+; (define (filtered-accumulate combiner null-value term a next b valid?)
+;     (define (filte valid? a)
+;         (cond [(valid? a) a]
+;               [else (filte valid? (next a))]))
+;     (cond [(> (filte valid? a) b) null-value]
+;           [else (combiner (term (filte valid? a))
+;                           (filtered-accumulate combiner 
+;                                                null-value 
+;                                                term 
+;                                                (next (filte valid? a)) 
+;                                                next 
+;                                                b
+;                                                valid?))]))
+
+; ;;; Predicate prime?
+; (define (smallest-divisor n)
+;     (find-divisor n 2))
+
+; (define (find-divisor n test-divisor)
+;     (cond [(> (square test-divisor) n) n]
+;           [(divides? test-divisor n) test-divisor]
+;           [else (find-divisor n (+ test-divisor 1))]))
+
+; (define (divides? a b)
+;     (= (remainder b a) 0))
+
+; (define (square x)  
+;     (* x x))
+
+; (define (prime? n)
+;     (= n (smallest-divisor n)))
+
+; ;;; sum-of-prime
+; (define (sum-of-prime a b)
+;     (filtered-accumulate + 
+;                          0
+;                          (lambda (x) x)
+;                          a
+;                          (lambda (i) (+ i 1))
+;                          b
+;                          prime?))
+
+; (sum-of-prime 3 10)
+
+; ;;; gcd
+; (define (gcd a b)
+;     (cond [(= b 0) a]
+;           [(gcd b (remainder a b))]))
+
+; (define (for-each-prime? i n)
+;     (= (gcd i n) 1))
+
+; ;;; product-of-for-each-prime
+; (define (product-of-for-each-prime n)
+;     (define (for-each-prime? i)
+;         (= (gcd i n) 1))
+;     (filtered-accumulate *
+;                          1
+;                          (lambda (x) x)
+;                          1
+;                          (lambda (i) (+ i 1))
+;                          (- n 1)
+;                          for-each-prime?))
+
+; (product-of-for-each-prime 6)
+; (product-of-for-each-prime 10)
+
+
+; ;;; Practice 1.34
+; (define (f g)
+;     (g 2))
+
+; (f f)
+
+; ;;; example binary-search
+; (define (search f neg-point pos-point)
+;     (define (average x y) (/ (+ x y) 2))
+;     (define (close-enough? x y)
+;         (define (abs x y)
+;             (if (< x y)
+;                 (- y x)
+;                 (- x y)))
+;         (< (abs x y) 0.0001))
+;     (let ((midpoint (average neg-point pos-point)))
+;         (if (close-enough? neg-point pos-point)
+;             midpoint
+;             (let ((test-value (f midpoint)))
+;                 (cond [(positive? test-value) 
+;                        (search f neg-point midpoint)]
+;                       [(negative? test-value)
+;                        (search f midpoint pos-point)]
+;                       [else midpoint])))))
+
+
+; (define (half-interval-method f a b)
+;     (let ((a-value (f a))
+;           (b-value (f b)))
+;         (cond [(and (negative? a-value) (positive? b-value))
+;                (search f a b)]
+;               [(and (negative? b-value) (positive? a-value))
+;                (search f b a)]
+;               [else 
+;                (error "Values are not of opposite sign" a b)])))
+
+; (half-interval-method sin 2.0 4.0)
+
+
+; ;;; example
+; (define tolerance 0.000001)
+
+; (define (fixed-point f first-guess)
+;     (define (abs x)
+;             (if (< x 0)
+;                 (- x)
+;                 x))
+;     (define (close-enough? v1 v2)
+;         (< (abs (- v1 v2)) tolerance))
+;     (define (try guess)
+;         (let ((next (f guess)))
+;             (if (close-enough? guess next)
+;                 next
+;                 (try next))))
+;     (try first-guess))
+
+
+; (fixed-point cos 1.0)
+
+; ;;; Practice 1.35
+; (fixed-point (lambda (x) (+ 1 (/ 1 x))) 2)
+
+;;; Practice 1.36
+; (define tolerance 0.000001)
+
+; (define (fixed-point f first-guess)
+;     (define (abs x)
+;             (if (< x 0)
+;                 (- x)
+;                 x))
+;     (define (close-enough? v1 v2)
+;         (< (abs (- v1 v2)) tolerance))
+;     (define (try guess)
+;         (let ((next (f guess)))
+;             (cond [(close-enough? guess next)
+;                    next]
+;                   [else (display guess)
+;                         (newline)
+;                         (try next)])))
+;     (try first-guess))
+
+; (fixed-point (lambda (x) (/ (log 1000) (log x))) 2)
+
+
+; ;;; Practice 1.37
+; (define (cont-frac n d k)
+;     (define (try-frac i)
+;         (cond [(= i k) (/ (n i) (d i))]
+;               [else (/ (n i) (+ (d i) (try-frac (+ 1 i))))]))
+;     (try-frac 1))
+
+; (cont-frac (lambda (i) 1.0)
+;            (lambda (i) 1.0)
+;            10)
+
+
+; ;;; 迭代版本
+; (define (cont-frac N D k)
+
+;     (define (iter i result)
+;         (if (= i 0)
+;             result
+;             (iter (- i 1)
+;                   (/ (N i)
+;                      (+ (D i) result)))))
+
+;     (iter (- k 1)
+;           (/ (N k) (D k))))
+
+
+; ;;; Practice 1.38
+; (define (cont-frac n d k)
+;     (define (try-frac i)
+;         (cond [(= i k) (/ (n i) (d i))]
+;               [else (/ (n i) (+ (d i) (try-frac (+ 1 i))))]))
+;     (try-frac 1))
+
+; (define (divide-exactly a b)
+;     (/ (- a (remainder a b)) b))
+
+; (cont-frac (lambda (i) 1.0)
+;            (lambda (i)
+;             (cond [(= (remainder i 3) 2)
+;                    (* 2 (+ 1 (divide-exactly i 3)))]
+;                   [else 1]))
+;            10)
+
+
+; ;;; Practice 1.39
+; (define (square x) (* x x))
+
+; (define (tan-cf x k)
+;     (define (try-tan i)
+;         (cond [(= i k) (- (/ (square x) (- (* 2 i) 1)))]
+;               [(= i 1) (/ x (+ 1 (try-tan 2)))]
+;               [else (- (/ (square x) 
+;                           (+ (- (* 2 i) 1) 
+;                              (try-tan (+ i 1)))))]))
+;     (try-tan 1))
+
+; (tan-cf (/ 3.141592653589796264 4) 20)
+
+
+; ;;; example
+; (define tolerance 0.000001)
+
+; (define (fixed-point f first-guess)
+;     (define (abs x)
+;             (if (< x 0)
+;                 (- x)
+;                 x))
+;     (define (close-enough? v1 v2)
+;         (< (abs (- v1 v2)) tolerance))
+;     (define (try guess)
+;         (let ((next (f guess)))
+;             (if (close-enough? guess next)
+;                 next
+;                 (try next))))
+;     (try first-guess))
+
+; (define (average-damp f)
+;     (lambda (x) (average x (f x))))
+
+; ; (define (sqrt x)
+; ;     (fixed-point (average-damp (lambda (y) (/ x y))
+; ;                  1.0)))
+
+; (define (deriv g)
+;     (define dx 0.0000001)
+;     (lambda (x)
+;         (/ (- (g (+ x dx)) (g x))
+;            dx)))
+
+; (define (newton-transform g)
+;     (lambda (x)
+;         (- x (/ (g x) ((deriv g) x)))))
+
+; (define (newton-method g guess)
+;     (fixed-point (newton-transform g) guess))
+
+; (define (sqrt x)
+;     (newton-method (lambda (y) (- (square y) x))
+;                    1.0))
+
+
+; ;;; Practice 1.40
+; (define (cubic a b c)
+;     (lambda (x)
+;         (+ (cube x)
+;            (* a (square x))
+;            (* b x)
+;            c)))
+
+
+; ;;; Practice 1.41
+; (define (double f)
+;     (lambda (x)
+;         (f (f x))))
+
+; ((double inc) 1)
+; (((double (double double)) inc) 5)
+
+
+; ;;; Practice 1.42
+; (define (compose f g)
+;     (lambda (x)
+;         (f (g x))))
+
+; (define (square x) (* x x))
+
+; ((compose square inc) 6)
+
+;;; Practice 1.43
+; (define (square x) (* x x))
+
+; (define (repeat f n)
+;     (lambda (x)
+;         (cond [(= n 1) (f x)]
+;               [else (f ((repeat f (- n 1)) x))])))
+
+
+
+; ((repeat square 2) 5)
+
+
+; ;;; Practice 1.44
+; (define (smooth f)
+;     (define (average x y z)
+;         (/ (+ x y z) 3))
+;     (define dx 0.00000001)
+;     (lambda (x)
+;         (average (f x) 
+;                  (f (+ x dx))
+;                  (f (- x dx)))))
+
+; (define (smooth-n-times f n)
+;     (let ((n-times-smooth (repeat smooth n)))
+;         (n-times-smooth f)))
+
+;;; Practice 1.45
+(define tolerance 0.000001)
+
+(define (fixed-point f first-guess)
+    (define (abs x)
+            (if (< x 0)
+                (- x)
+                x))
+    (define (close-enough? v1 v2)
+        (< (abs (- v1 v2)) tolerance))
+    (define (try guess)
+        (let ((next (f guess)))
+            (if (close-enough? guess next)
+                next
+                (try next))))
+    (try first-guess))
+
+(define (average-damp f)
+    (define (average x y) (/ (+ x y) 2))
+    (lambda (x) (average x (f x))))
+
+
+(define (repeat f n)
+    (lambda (x)
+        (cond [(= n 1) (f x)]
+              [else (f ((repeat f (- n 1)) x))])))
+
+(define (n-times-average-damp f n)
+    (let ((n-damp (repeat average-damp n)))
+        (n-damp f)))
+
+(define (n-times-y y n)
+    (cond [(= n 0) 1]
+          [else (* y (n-times-y y (- n 1)))]))
+
+(define (n-root x n)
+    (fixed-point (n-times-average-damp ((lambda y) 
+                                            (/ x (n-times-y y n)))
+                                        2)
+                 1.0))
+
+
